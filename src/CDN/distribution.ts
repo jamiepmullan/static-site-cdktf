@@ -9,6 +9,13 @@ export class SiteCdn extends CloudfrontDistribution {
   constructor(scope: Construct, bucket: S3Bucket, originIdentity: CloudfrontOriginAccessIdentity, cert: AcmCertificate ) {
     super(scope, "myCdn", {
       enabled: true,
+      dependsOn: [bucket],
+      defaultRootObject: 'index.html',
+      customErrorResponse: [{
+        errorCode: 403,
+        responseCode: 200,
+        responsePagePath: '/index.html'
+      }],
       defaultCacheBehavior: [ 
         {
           allowedMethods: ["GET"],
@@ -21,14 +28,14 @@ export class SiteCdn extends CloudfrontDistribution {
               }
             ],
           }],
-          targetOriginId: "",
-          viewerProtocolPolicy: ""
+          targetOriginId: `origin-${bucket.bucketDomainName}`,
+          viewerProtocolPolicy: "allow-all"
         }
       ],
       origin: [
         {
           domainName: bucket.bucketDomainName,
-          originId: "",
+          originId: `origin-${bucket.bucketDomainName}`,
           s3OriginConfig: [{
             originAccessIdentity: originIdentity.cloudfrontAccessIdentityPath
           }]
@@ -42,7 +49,7 @@ export class SiteCdn extends CloudfrontDistribution {
       viewerCertificate: [
         {
           acmCertificateArn: cert.arn,
-          sslSupportMethod: "SSL",
+          minimumProtocolVersion: "TLSv1.2_2018",
         }
       ]
     });
