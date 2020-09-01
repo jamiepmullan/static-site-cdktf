@@ -1,4 +1,4 @@
-# Example Project for running a Static Site in CDKTF
+# Example Project for running a Static Site in CDKTF (not yet tested)
 
 ## Download Terraform:
 - From: https://www.terraform.io/downloads.html
